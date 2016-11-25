@@ -24,10 +24,46 @@ class rhn (
         fail("Not already registered: RHN username(${username}) and password(${password}) required")
       }
 
-      exec { 'rhn register':
-        command => "rhnreg_ks '--username=${username}' '--password=${password}'",
-        unless  => 'rhn_check',
-        require => Package[$rhn::params::packages],
+      if($rhs::params::subscription_manager)
+      {
+        # subscription-manager register --username SRLCUK --password d9uAYQSgCX --auto-attach
+        exec { 'rhn register':
+          command => "subscription-manager register '--username=${username}' '--password=${password}' --auto-attach",
+          unless  => 'subscription-manager status',
+          require => Package[$rhn::params::packages],
+        }
+
+        if versioncmp($::puppetversion, '3.8.0') >= 0
+        {
+          schedule { 'eyp-rhn daily schedule':
+            period => daily,
+            repeat => 1,
+          }
+
+          Exec['rhn register'] {
+            schedule => 'eyp-rhn daily schedule',
+          }
+        }
+      }
+      else
+      {
+        exec { 'rhn register':
+          command => "rhnreg_ks '--username=${username}' '--password=${password}'",
+          unless  => 'rhn_check',
+          require => Package[$rhn::params::packages],
+        }
+
+        if versioncmp($::puppetversion, '3.8.0') >= 0
+        {
+          schedule { 'eyp-rhn daily schedule':
+            period => daily,
+            repeat => 1,
+          }
+
+          Exec['rhn register'] {
+            schedule => 'eyp-rhn daily schedule',
+          }
+        }
       }
     }
 
