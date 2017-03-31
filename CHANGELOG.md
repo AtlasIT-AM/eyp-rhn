@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 0.1.15
+
+* enhanced unless detection for **rhn::repo**
+
+## 0.1.14
+
+* changed **rhn::repo** unless, **yum repolist** instead of **subscription-manager**
+
+## 0.1.12
+
+* enhanced **rhn::repo** checking
+
 ## 0.1.11
 
 * **INCOMPATIBLE CHANGE**: renamed **rhn::addrepo** to **rhn::repo**
